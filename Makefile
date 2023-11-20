@@ -1,4 +1,5 @@
 #RBS40v Touchpad
+CONFIG_INPUT_RBS40V_TOUCHPAD=m
 
 rbs40v-touchpad-objs := rbs40v-touchpad.o
 obj-$(CONFIG_INPUT_RBS40V_TOUCHPAD) += input-rbs40v-touchpad.o
