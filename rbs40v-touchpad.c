@@ -65,7 +65,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	of_node_put(i2c->dev.of_node);
 
 	/* set up the volume button */
-	button_dev[0] = devm_input_allocate_device(i2c->dev);
+	button_dev[0] = devm_input_allocate_device(&i2c->dev);
 	if (!button_dev[0]) {
 		return -ENOMEM;
 	}
@@ -77,7 +77,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 
 	/* set up the Mic Mute button */
-	button_dev[1] = devm_input_allocate_device(i2c->dev);
+	button_dev[1] = devm_input_allocate_device(&i2c->dev);
 	if (!button_dev[1]) {
 		return -ENOMEM;
 	}
@@ -88,7 +88,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		goto err_free_dev;
 	}
 	/* set up the Notification button */
-	button_dev[2] = devm_input_allocate_device(i2c->dev);
+	button_dev[2] = devm_input_allocate_device(&i2c->dev);
 	if (!button_dev[2]) {
 		return -ENOMEM;
 	}
@@ -99,7 +99,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		goto err_free_dev;
 	}
 	/* set up the volume mute button */
-	button_dev[3] = devm_input_allocate_device(i2c->dev);
+	button_dev[3] = devm_input_allocate_device(&i2c->dev);
 	if (!button_dev[3]) {
 		return -ENOMEM;
 	}
@@ -110,7 +110,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		goto err_free_dev;
 	}
 
-	led_dev = devm_kzalloc(i2c->dev, sizeof(struct ledclass_dev) * NUM_BUTTONS, GFP_KERNEL);
+	led_dev = devm_kzalloc(&i2c->dev, sizeof(struct ledclass_dev) * NUM_BUTTONS, GFP_KERNEL);
 	if (!led_dev) {
 		return -ENOMEM;
 	}
@@ -118,21 +118,20 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	led_dev[0]->name = "rbs40v_touchpad:white:volume";
 	led_dev->max_brightness = 10;
 	led_dev->brightness = LED_OFF;
-	error = devm_led_classdev_register(i2c->dev, led_dev[0]);
+	error = devm_led_classdev_register(&i2c->dev, led_dev[0]);
 	if (error) {
 		goto err_free_dev;
 	}
 
 	/* Set up MIC mute */
 	led_dev[1]->name = "rbs40v_touchbad:red:micmute";
-	error = devm_led_classdev_register(i2c->dev, led_dev[1]);
+	error = devm_led_classdev_register(&i2c->dev, led_dev[1]);
 	if (error) {
 		goto err_free_dev;
 	}
 	/* Set up MIC mute */
 	led_dev[2]->name = "rbs40v_touchbad:red:volmute";
-	devm_led_classdev_register(i2c->dev, led_dev);
-	error = devm_led_classdev_register(i2c->dev, led_dev[2]);
+	error = devm_led_classdev_register(&i2c->dev, led_dev[2]);
 	if (error) {
 		goto err_free_dev;
 	}
