@@ -16,6 +16,7 @@
 #include <linux/interrupt.h>            // Required for the IRQ code
 #include <linux/kthread.h>
 #include <linux/delay.h>
+#include <linux/input.h>
 
 struct rbs40v_tp_dev {
 	struct i2c_client *i2c;
@@ -26,7 +27,7 @@ static struct input_dev **button_dev;
 static struct led_classdev **led_dev;
 #define NAME		"RBS40V touchpad"
 #define NUM_LEDS	3
-static const struct of_device_id rbs40v_touchpad_id_table[];
+static const struct i2c_of_device_id rbs40v_touchpad_id_table[];
 
 static int rbs40v_tp_worker(void *dev_id) {
 	struct rbs40v_tp_dev *tp = dev_id;
@@ -51,7 +52,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	struct rbs40v_tp_dev *tp;
 	const struct i2c_of_device_id *match = i2c_of_match_device(rbs40v_touchpad_id_table, i2c);
 
-	tp = devm_kzalloc(i2c->dev, sizeof(struct rbs40v_tp_dev), GFP_KERNEL);
+	tp = devm_kzalloc(&i2c->dev, sizeof(struct rbs40v_tp_dev), GFP_KERNEL);
 	if (!tp) {
 		ret = -ENODEV;
 		goto error;
@@ -158,7 +159,7 @@ static void rbs40v_touchpad_remove(struct i2c_client *client){
 	return 0;
 }
 
-static const struct of_device_id rbs40v_touchpad_id_table[] = {
+static const struct i2c_of_device_id rbs40v_touchpad_id_table[] = {
         { .compatible = "rbs40v-touchpad" },
         {},
 };
