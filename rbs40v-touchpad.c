@@ -28,6 +28,7 @@ static struct input_dev **button_dev;
 static struct led_classdev **led_dev;
 #define NAME		"RBS40V touchpad"
 #define NUM_LEDS	3
+#define NUM_BUTTONS     4
 static const struct i2c_of_device_id rbs40v_touchpad_id_table[];
 
 static int rbs40v_tp_worker(void *dev_id) {
@@ -52,6 +53,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	struct device_node *np;
 	struct rbs40v_tp_dev *tp;
 	const struct i2c_of_device_id *match = i2c_of_match_device(rbs40v_touchpad_id_table, i2c);
+	struct task_struct *kthread;
 
 	tp = devm_kzalloc(&i2c->dev, sizeof(struct rbs40v_tp_dev), GFP_KERNEL);
 	if (!tp) {
@@ -117,9 +119,9 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 	/* Set up volume LED, we will abuse the led brightness mechanism to pass volumes 1-11 */
 	led_dev[0]->name = "rbs40v_touchpad:white:volume";
-	led_dev->max_brightness = 10;
-	led_dev->brightness = LED_OFF;
-	error = devm_led_classdev_register(&i2c->dev, led_dev[0]);
+	led_dev[0]->max_brightness = 10;
+	led_dev[0]->brightness = LED_OFF;
+	ret = devm_led_classdev_register(&i2c->dev, led_dev[0]);
 	if (ret) {
 		goto err_free_dev;
 	}
@@ -130,7 +132,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	if (ret) {
 		goto err_free_dev;
 	}
-	/* Set up MIC mute */
+	/* Set up vol mute */
 	led_dev[2]->name = "rbs40v_touchbad:red:volmute";
 	ret = devm_led_classdev_register(&i2c->dev, led_dev[2]);
 	if (ret) {
