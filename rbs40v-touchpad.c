@@ -71,8 +71,8 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 	button_dev[0]->evbit[0] = BIT_MASK(EV_KEY);
 	button_dev[0]->keybit[BIT_WORD(BTN_0)] = BIT_MASK(BTN_0);
-	error = input_register_device(button_dev[0]);
-	if (error) {
+	ret = input_register_device(button_dev[0]);
+	if (ret) {
 		goto err_free_dev;
 	}
 
@@ -83,8 +83,8 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 	button_dev[1]->evbit[0] = BIT_MASK(EV_KEY);
 	button_dev[1]->keybit[BIT_WORD(BTN_1)] = BIT_MASK(BTN_1);
-	error = input_register_device(button_dev[1]);
-	if (error) {
+	ret = input_register_device(button_dev[1]);
+	if (ret) {
 		goto err_free_dev;
 	}
 	/* set up the Notification button */
@@ -94,8 +94,8 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 	button_dev[2]->evbit[0] = BIT_MASK(EV_KEY);
 	button_dev[2]->keybit[BIT_WORD(BTN_2)] = BIT_MASK(BTN_2);
-	error = input_register_device(button_dev[2]);
-	if (error) {
+	ret = input_register_device(button_dev[2]);
+	if (ret) {
 		goto err_free_dev;
 	}
 	/* set up the volume mute button */
@@ -105,8 +105,8 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 	button_dev[3]->evbit[0] = BIT_MASK(EV_KEY);
 	button_dev[3]->keybit[BIT_WORD(BTN_3)] = BIT_MASK(BTN_3);
-	error = input_register_device(button_dev[3]);
-	if (error) {
+	ret = input_register_device(button_dev[3]);
+	if (ret) {
 		goto err_free_dev;
 	}
 
@@ -119,20 +119,20 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	led_dev->max_brightness = 10;
 	led_dev->brightness = LED_OFF;
 	error = devm_led_classdev_register(&i2c->dev, led_dev[0]);
-	if (error) {
+	if (ret) {
 		goto err_free_dev;
 	}
 
 	/* Set up MIC mute */
 	led_dev[1]->name = "rbs40v_touchbad:red:micmute";
-	error = devm_led_classdev_register(&i2c->dev, led_dev[1]);
-	if (error) {
+	ret = devm_led_classdev_register(&i2c->dev, led_dev[1]);
+	if (ret) {
 		goto err_free_dev;
 	}
 	/* Set up MIC mute */
 	led_dev[2]->name = "rbs40v_touchbad:red:volmute";
-	error = devm_led_classdev_register(&i2c->dev, led_dev[2]);
-	if (error) {
+	ret = devm_led_classdev_register(&i2c->dev, led_dev[2]);
+	if (ret) {
 		goto err_free_dev;
 	}
 
@@ -140,13 +140,13 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	if (IS_ERR(kthread)) {
 		error = PTR_ERR(kthread);
 		dev_err(&client->dev, "Could not start worker thread: %d.\n", error);
-		return error;
+		return ret;
 	}
 
 	return i2c_smbus_write_word_data(i2c, RBS40V_REG_A, RBS40V_INIT_DEV);
 
 err_free_dev:
-	return -ENOMEM;
+	return ret;
 }
 
 /** @brief The LKM cleanup function
