@@ -16,7 +16,7 @@
 #include <linux/kthread.h>
 #include <linux/delay.h>
 
-struct rbs40v_touchpad_dev {
+struct rbs40v_tp_dev {
 	struct i2c_client i2c;
 };
 static int mic_mute_gpio;
@@ -47,7 +47,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	int ret = 0;
 	struct device_node *np;
 	struct rbs40v_tp_dev *tp;
-	const struct of_device_id *match = of_match_device(ipq40xx_cpu_dai_id_table, &pdev->dev);
+	const struct i2c_of_device_id *match = of_match_device(rbs40v_touchpad_id_table, i2c);
 
 	tp = devm_kzalloc(i2c->dev, sizeof(struct rbs40v_tp_dev), GFP_KERNEL);
 	if (!tp) {
