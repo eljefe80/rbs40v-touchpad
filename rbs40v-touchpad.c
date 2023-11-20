@@ -7,15 +7,18 @@
  * skeleton provided by http://derekmolloy.ie/kernel-gpio-programming-buttons-and-leds/
 */
 
+#include <linux/i2c.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/gpio.h>                 // Required for the GPIO functions
 #include <linux/interrupt.h>            // Required for the IRQ code
+#include <linux/kthread.h>
+#include <delay.h>
 
 struct rbs40v_touchpad_dev {
 	struct i2c_client i2c;
-}
+};
 static int mic_mute_gpio;
 static int speaker_mute_gpio;
 static struct input_dev **button_dev;
@@ -29,6 +32,7 @@ static int rbs40v_tp_worker(void *dev_id) {
 	while (!kthread_should_stop()) {
 		msleep(20);
 	}
+	return 0;
 }
 
 /** @brief The LKM initialization function
@@ -39,12 +43,11 @@ static int rbs40v_tp_worker(void *dev_id) {
  *  @return returns 0 if successful
  */
 static int rbs40v_touchpad_probe(struct i2c_client *i2c,
-				const stcut i2c_device_id *id){
+				struct i2c_device_id *id){
 	int ret = 0;
 	struct device_node *np;
 	struct rbs40v_tp_dev *tp;
 	const struct of_device_id *match = of_match_device(ipq40xx_cpu_dai_id_table, &pdev->dev);
-	        
 
 	tp = devm_kzalloc(i2c->dev, sizeof(struct rbs40v_tp_dev), GFP_KERNEL);
 	if (!tp) {
@@ -150,7 +153,7 @@ err_free_dev:
  *  GPIOs and display cleanup messages.
  */
 static void rbs40v_touchpad_remove(struct i2c_client *client){
-	return 0
+	return 0;
 }
 
 static const struct of_device_id rbs40v_touchpad_id_table[] = {
