@@ -17,6 +17,7 @@
 #include <linux/kthread.h>
 #include <linux/delay.h>
 #include <linux/input.h>
+#include <linux/leds.h>
 
 struct rbs40v_tp_dev {
 	struct i2c_client *i2c;
@@ -110,7 +111,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		goto err_free_dev;
 	}
 
-	led_dev = devm_kzalloc(&i2c->dev, sizeof(struct ledclass_dev) * NUM_BUTTONS, GFP_KERNEL);
+	led_dev = devm_kzalloc(&i2c->dev, sizeof(struct led_classdev) * NUM_BUTTONS, GFP_KERNEL);
 	if (!led_dev) {
 		return -ENOMEM;
 	}
