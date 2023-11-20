@@ -11,13 +11,14 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
+#include <linux/of_gpio.h>
 #include <linux/gpio.h>                 // Required for the GPIO functions
 #include <linux/interrupt.h>            // Required for the IRQ code
 #include <linux/kthread.h>
 #include <linux/delay.h>
 
 struct rbs40v_tp_dev {
-	struct i2c_client i2c;
+	struct i2c_client *i2c;
 };
 static int mic_mute_gpio;
 static int speaker_mute_gpio;
@@ -25,6 +26,7 @@ static struct input_dev **button_dev;
 static struct led_classdev **led_dev;
 #define NAME		"RBS40V touchpad"
 #define NUM_LEDS	3
+static const struct of_device_id rbs40v_touchpad_id_table[];
 
 static int rbs40v_tp_worker(void *dev_id) {
 	struct rbs40v_tp_dev *tp = dev_id;
@@ -47,7 +49,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	int ret = 0;
 	struct device_node *np;
 	struct rbs40v_tp_dev *tp;
-	const struct i2c_of_device_id *match = of_match_device(rbs40v_touchpad_id_table, i2c);
+	const struct i2c_of_device_id *match = i2c_of_match_device(rbs40v_touchpad_id_table, i2c);
 
 	tp = devm_kzalloc(i2c->dev, sizeof(struct rbs40v_tp_dev), GFP_KERNEL);
 	if (!tp) {
