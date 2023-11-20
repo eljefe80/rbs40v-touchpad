@@ -14,7 +14,7 @@
 #include <linux/gpio.h>                 // Required for the GPIO functions
 #include <linux/interrupt.h>            // Required for the IRQ code
 #include <linux/kthread.h>
-#include <delay.h>
+#include <linux/delay.h>
 
 struct rbs40v_touchpad_dev {
 	struct i2c_client i2c;
