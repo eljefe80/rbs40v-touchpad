@@ -29,7 +29,7 @@ static struct led_classdev **led_dev;
 #define NAME		"RBS40V touchpad"
 #define NUM_LEDS	3
 #define NUM_BUTTONS     4
-static const struct i2c_of_device_id rbs40v_touchpad_id_table[];
+static const struct of_device_id rbs40v_touchpad_id_table[];
 
 static int rbs40v_tp_worker(void *dev_id) {
 	struct rbs40v_tp_dev *tp = dev_id;
@@ -52,7 +52,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	int ret = 0;
 	struct device_node *np;
 	struct rbs40v_tp_dev *tp;
-	const struct i2c_of_device_id *match = i2c_of_match_device(rbs40v_touchpad_id_table, i2c);
+	const struct of_device_id *match = i2c_of_match_device(rbs40v_touchpad_id_table, i2c);
 	struct task_struct *kthread;
 
 	tp = devm_kzalloc(&i2c->dev, sizeof(struct rbs40v_tp_dev), GFP_KERNEL);
@@ -147,7 +147,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 
 	return i2c_smbus_write_word_data(i2c, RBS40V_REG_A, RBS40V_INIT_DEV);
-
+error:
 err_free_dev:
 	return ret;
 }
@@ -158,10 +158,10 @@ err_free_dev:
  *  GPIOs and display cleanup messages.
  */
 static void rbs40v_touchpad_remove(struct i2c_client *client){
-	return 0;
+	return;
 }
 
-static const struct i2c_of_device_id rbs40v_touchpad_id_table[] = {
+static const struct of_device_id rbs40v_touchpad_id_table[] = {
         { .compatible = "rbs40v-touchpad" },
         {},
 };
