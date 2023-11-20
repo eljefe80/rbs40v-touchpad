@@ -12,36 +12,9 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-config SND_QCA_SOC
-	tristate "SoC Audio for QCA based platforms"
-	depends on ARCH_QCOM
+config INPUT_RBS40V_TOUCHPAD
+	tristate "RBS40V Touchpad"
 	help
 	  Say Y or M if you want to add support for QCA platforms
-	  QCA SoC supports following interfaces
-	  I2S
-	  Also select IPQ40xx platform
-
-config SND_QCA_SOC_IPQ40XX
-	tristate "SoC Audio support for IPQ40xx (Dakota) based platforms"
-	depends on ARCH_QCOM && SND_QCA_SOC
-	select SND_IPQ40XX_SOC_PCM_I2S
-	select SND_IPQ40XX_SOC_CPU_DAI
-	help
-	  Say Y or M if you want to add support for IPQ40xx platforms
-
-config SND_IPQ40XX_SOC_CODEC_TAS5782M
-        tristate "TAS5782m CODEC/PA support for IPQ40xx"
-        depends on ARCH_QCOM && SND_QCA_SOC
-        help
-          Say Y or M if you want to add ALC1312 support for IPQ40xx platforms
-
-config SND_IPQ40XX_SOC_PCM_I2S
-	tristate
-	depends on SND_QCA_SOC
-
-
-config SND_IPQ40XX_SOC_CPU_DAI
-	tristate
-	depends on SND_QCA_SOC
 
 
