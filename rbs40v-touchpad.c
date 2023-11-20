@@ -70,7 +70,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		return -ENOMEM;
 	}
 	button_dev[0]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[0]->keybit[BIT_WORD(BTN_01)] = BIT_MASK(BTN_0);
+	button_dev[0]->keybit[BIT_WORD(BTN_0)] = BIT_MASK(BTN_0);
 	error = input_register_device(button_dev[0]);
 	if (error) {
 		goto err_free_dev;
@@ -82,7 +82,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		return -ENOMEM;
 	}
 	button_dev[1]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[1]->keybit[BIT_WORD(BTN_01)] = BIT_MASK(BTN_0);
+	button_dev[1]->keybit[BIT_WORD(BTN_1)] = BIT_MASK(BTN_1);
 	error = input_register_device(button_dev[1]);
 	if (error) {
 		goto err_free_dev;
@@ -93,7 +93,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		return -ENOMEM;
 	}
 	button_dev[2]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[2]->keybit[BIT_WORD(BTN_01)] = BIT_MASK(BTN_0);
+	button_dev[2]->keybit[BIT_WORD(BTN_2)] = BIT_MASK(BTN_2);
 	error = input_register_device(button_dev[2]);
 	if (error) {
 		goto err_free_dev;
@@ -104,7 +104,7 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 		return -ENOMEM;
 	}
 	button_dev[3]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[3]->keybit[BIT_WORD(BTN_01)] = BIT_MASK(BTN_0);
+	button_dev[3]->keybit[BIT_WORD(BTN_3)] = BIT_MASK(BTN_3);
 	error = input_register_device(button_dev[3]);
 	if (error) {
 		goto err_free_dev;
