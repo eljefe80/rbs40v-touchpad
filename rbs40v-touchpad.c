@@ -29,6 +29,10 @@ static struct led_classdev **led_dev;
 #define NAME		"RBS40V touchpad"
 #define NUM_LEDS	3
 #define NUM_BUTTONS     4
+
+#define RBS40V_REG_A    -1
+#define RBS40V_REG_B    -1
+#define RBS40V_INIT_DEV -1
 static const struct of_device_id rbs40v_touchpad_id_table[];
 
 static int rbs40v_tp_worker(void *dev_id) {
@@ -168,7 +172,7 @@ static const struct of_device_id rbs40v_touchpad_id_table[] = {
 
 MODULE_DEVICE_TABLE(of, rbs40v_touchpad_id_table);
 
-static struct platform_driver rbs40v_touchpad_driver = {
+static struct i2c_driver rbs40v_touchpad_driver = {
         .probe = rbs40v_touchpad_probe,
         .remove = rbs40v_touchpad_remove,
         .driver = {
