@@ -141,8 +141,8 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 
 	kthread = kthread_run(rbs40v_tp_worker, tp, "rbs40v_tp_worker");
 	if (IS_ERR(kthread)) {
-		error = PTR_ERR(kthread);
-		dev_err(&client->dev, "Could not start worker thread: %d.\n", error);
+		ret = PTR_ERR(kthread);
+		dev_err(&i2c->dev, "Could not start worker thread: %d.\n", ret);
 		return ret;
 	}
 
