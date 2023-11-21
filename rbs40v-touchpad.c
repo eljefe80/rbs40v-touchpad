@@ -52,7 +52,7 @@ static int rbs40v_tp_worker(void *dev_id) {
  *  @return returns 0 if successful
  */
 static int rbs40v_touchpad_probe(struct i2c_client *i2c,
-				struct i2c_device_id *id){
+				const struct i2c_device_id *id){
 	int ret = 0;
 	struct device_node *np;
 	struct rbs40v_tp_dev *tp;
@@ -161,8 +161,8 @@ err_free_dev:
  *  code is used for a built-in driver (not a LKM) that this function is not required. Used to release the
  *  GPIOs and display cleanup messages.
  */
-static void rbs40v_touchpad_remove(struct i2c_client *client){
-	return;
+static int rbs40v_touchpad_remove(struct i2c_client *client){
+	return 0;
 }
 
 static const struct of_device_id rbs40v_touchpad_id_table[] = {
@@ -182,7 +182,7 @@ static struct i2c_driver rbs40v_touchpad_driver = {
         },
 };
 
-module_platform_driver(rbs40v_touchpad_driver);
+module_i2c_driver(rbs40v_touchpad_driver);
 
 MODULE_ALIAS("rbs40v_touchpad_driver");
 MODULE_LICENSE("GPL");
