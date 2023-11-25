@@ -21,18 +21,47 @@
 
 struct rbs40v_tp_dev {
 	struct i2c_client *i2c;
+	struct task_struct *kthread;
+	struct input_dev **button_dev;
+	struct led_classdev **led_dev;
 };
+
 static int mic_mute_gpio;
 static int speaker_mute_gpio;
-static struct input_dev **button_dev;
-static struct led_classdev **led_dev;
+
+enum 
+
+/****
+1-11: volume
+32: speaker mute
+64: center button
+128: mic mute
+****/
+enum {
+VOL_1 = 1,
+VOL_2,
+VOL_3,
+VOL_4,
+VOL_5,
+VOL_6,
+VOL_7,
+VOL_8,
+VOL_9,
+VOL_10,
+VOL_11
+};
+#define SPKR_MUTE	0x20
+#define ACTION_BTN	0x40
+#define MIC_MUTE	0x80
+
 #define NAME		"RBS40V touchpad"
 #define NUM_LEDS	3
 #define NUM_BUTTONS     4
 
-#define RBS40V_REG_A    -1
-#define RBS40V_REG_B    -1
-#define RBS40V_INIT_DEV -1
+#define RBS40V_REG_A    0
+#define RBS40V_REG_B    1
+#define RBS40V_INIT_DEV 1
+
 static const struct of_device_id rbs40v_touchpad_id_table[];
 
 static int rbs40v_tp_worker(void *dev_id) {
@@ -41,6 +70,37 @@ static int rbs40v_tp_worker(void *dev_id) {
 	while (!kthread_should_stop()) {
 		msleep(20);
 	}
+	ret = i2c_smbus_read_word_data(tp->i2c, );
+	switch (ret) :
+	{
+		case VOL_1:
+		case VOL_2:
+		case VOL_3:
+		case VOL_4:
+		case VOL_5:
+		case VOL_6:
+		case VOL_7:
+		case VOL_8:
+		case VOL_9:
+		case VOL_10:
+		case VOL_11:
+			input_report_key(tp->button[0], BTN_0, inb(BUTTON_PORT) & 1);
+			input_sync(tp->button[0];
+			break;
+		case SPKR_MUTE:
+			input_report_key(tp->button[1], BTN_1, inb(BUTTON_PORT) & 1);
+			input_sync(tp->button[1];
+			break;
+		case ACTION_BTN:
+			input_report_key(tp->button[2], BTN_2, inb(BUTTON_PORT) & 1);
+			input_sync(tp->button[2];
+			break;
+		case MIC_MUTE:
+			input_report_key(tp->button[3], BTN_0, inb(BUTTON_PORT) & 1);
+			input_sync(tp->button[3];
+			break;
+	}
+	
 	return 0;
 }
 
@@ -72,78 +132,78 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	of_node_put(i2c->dev.of_node);
 
 	/* set up the volume button */
-	button_dev[0] = devm_input_allocate_device(&i2c->dev);
-	if (!button_dev[0]) {
+	tp->button_dev[0] = devm_input_allocate_device(&i2c->dev);
+	if (!tp->button_dev[0]) {
 		return -ENOMEM;
 	}
-	button_dev[0]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[0]->keybit[BIT_WORD(BTN_0)] = BIT_MASK(BTN_0);
-	ret = input_register_device(button_dev[0]);
+	tp->button_dev[0]->evbit[0] = BIT_MASK(EV_KEY);
+	tp->button_dev[0]->keybit[BIT_WORD(BTN_0)] = BIT_MASK(BTN_0);
+	ret = input_register_device(tp->button_dev[0]);
 	if (ret) {
 		goto err_free_dev;
 	}
 
 	/* set up the Mic Mute button */
-	button_dev[1] = devm_input_allocate_device(&i2c->dev);
-	if (!button_dev[1]) {
+	tp->button_dev[1] = devm_input_allocate_device(&i2c->dev);
+	if (!tp->button_dev[1]) {
 		return -ENOMEM;
 	}
-	button_dev[1]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[1]->keybit[BIT_WORD(BTN_1)] = BIT_MASK(BTN_1);
-	ret = input_register_device(button_dev[1]);
+	tp->button_dev[1]->evbit[0] = BIT_MASK(EV_KEY);
+	tp->button_dev[1]->keybit[BIT_WORD(BTN_1)] = BIT_MASK(BTN_1);
+	ret = input_register_device(tp->button_dev[1]);
 	if (ret) {
 		goto err_free_dev;
 	}
 	/* set up the Notification button */
-	button_dev[2] = devm_input_allocate_device(&i2c->dev);
-	if (!button_dev[2]) {
+	tp->button_dev[2] = devm_input_allocate_device(&i2c->dev);
+	if (!tp->button_dev[2]) {
 		return -ENOMEM;
 	}
-	button_dev[2]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[2]->keybit[BIT_WORD(BTN_2)] = BIT_MASK(BTN_2);
-	ret = input_register_device(button_dev[2]);
+	tp->button_dev[2]->evbit[0] = BIT_MASK(EV_KEY);
+	tp->button_dev[2]->keybit[BIT_WORD(BTN_2)] = BIT_MASK(BTN_2);
+	ret = input_register_device(tp->button_dev[2]);
 	if (ret) {
 		goto err_free_dev;
 	}
 	/* set up the volume mute button */
-	button_dev[3] = devm_input_allocate_device(&i2c->dev);
-	if (!button_dev[3]) {
+	tp->button_dev[3] = devm_input_allocate_device(&i2c->dev);
+	if (!tp->button_dev[3]) {
 		return -ENOMEM;
 	}
-	button_dev[3]->evbit[0] = BIT_MASK(EV_KEY);
-	button_dev[3]->keybit[BIT_WORD(BTN_3)] = BIT_MASK(BTN_3);
-	ret = input_register_device(button_dev[3]);
+	tp->button_dev[3]->evbit[0] = BIT_MASK(EV_KEY);
+	tp->button_dev[3]->keybit[BIT_WORD(BTN_3)] = BIT_MASK(BTN_3);
+	ret = input_register_device(tp->button_dev[3]);
 	if (ret) {
 		goto err_free_dev;
 	}
 
-	led_dev = devm_kzalloc(&i2c->dev, sizeof(struct led_classdev) * NUM_BUTTONS, GFP_KERNEL);
-	if (!led_dev) {
+	tp->led_dev = devm_kzalloc(&i2c->dev, sizeof(struct led_classdev) * NUM_BUTTONS, GFP_KERNEL);
+	if (!tp->led_dev) {
 		return -ENOMEM;
 	}
 	/* Set up volume LED, we will abuse the led brightness mechanism to pass volumes 1-11 */
-	led_dev[0]->name = "rbs40v_touchpad:white:volume";
-	led_dev[0]->max_brightness = 10;
-	led_dev[0]->brightness = LED_OFF;
-	ret = devm_led_classdev_register(&i2c->dev, led_dev[0]);
+	tp->led_dev[0]->name = "rbs40v_touchpad:white:volume";
+	tp->led_dev[0]->max_brightness = 10;
+	tp->led_dev[0]->brightness = LED_OFF;
+	ret = devm_led_classdev_register(&i2c->dev, tp->led_dev[0]);
 	if (ret) {
 		goto err_free_dev;
 	}
 
 	/* Set up MIC mute */
-	led_dev[1]->name = "rbs40v_touchbad:red:micmute";
-	ret = devm_led_classdev_register(&i2c->dev, led_dev[1]);
+	tp->led_dev[1]->name = "rbs40v_touchbad:red:micmute";
+	ret = devm_led_classdev_register(&i2c->dev, tp->led_dev[1]);
 	if (ret) {
 		goto err_free_dev;
 	}
 	/* Set up vol mute */
-	led_dev[2]->name = "rbs40v_touchbad:red:volmute";
-	ret = devm_led_classdev_register(&i2c->dev, led_dev[2]);
+	tp->led_dev[2]->name = "rbs40v_touchbad:red:volmute";
+	ret = devm_led_classdev_register(&i2c->dev, tp->led_dev[2]);
 	if (ret) {
 		goto err_free_dev;
 	}
 
-	kthread = kthread_run(rbs40v_tp_worker, tp, "rbs40v_tp_worker");
+	tp->kthread = kthread_run(rbs40v_tp_worker, tp, "rbs40v_tp_worker");
 	if (IS_ERR(kthread)) {
 		ret = PTR_ERR(kthread);
 		dev_err(&i2c->dev, "Could not start worker thread: %d.\n", ret);
@@ -151,9 +211,11 @@ static int rbs40v_touchpad_probe(struct i2c_client *i2c,
 	}
 
 	return i2c_smbus_write_word_data(i2c, RBS40V_REG_A, RBS40V_INIT_DEV);
+
 error:
 err_free_dev:
 	return ret;
+
 }
 
 /** @brief The LKM cleanup function
@@ -162,6 +224,10 @@ err_free_dev:
  *  GPIOs and display cleanup messages.
  */
 static int rbs40v_touchpad_remove(struct i2c_client *client){
+
+	tp = i2c_get_clientdata(i2c);
+	kthread_stop(tp->kthread);
+
 	return 0;
 }
 
